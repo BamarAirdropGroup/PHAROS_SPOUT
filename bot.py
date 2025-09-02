@@ -2,7 +2,7 @@ from web3 import Web3
 from web3.exceptions import TransactionNotFound
 from eth_account import Account
 from eth_utils import to_hex, to_bytes
-from curl_cffi import requests
+import requests
 from fake_useragent import FakeUserAgent
 from datetime import datetime
 from colorama import *
