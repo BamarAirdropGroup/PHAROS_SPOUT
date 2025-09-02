@@ -2,7 +2,7 @@ from web3 import Web3
 from web3.exceptions import TransactionNotFound
 from eth_account import Account
 from eth_utils import to_hex, to_bytes
-import requests  # Use standard requests library
+import requests
 from fake_useragent import FakeUserAgent
 from datetime import datetime
 from colorama import *
@@ -573,8 +573,8 @@ class Spout:
     async def check_connection(self, proxy_url=None):
         url = "https://api.ipify.org?format=json"
         try:
-            # Use standard requests instead of curl_requests
-            response = await asyncio.to_thread(requests.get, url=url, proxies=proxy_url, timeout=30)
+            proxies = {"http": proxy_url, "https": proxy_url} if proxy_url else None
+            response = await asyncio.to_thread(requests.get, url=url, proxies=proxies, timeout=30)
             response.raise_for_status()
             return True
         except Exception as e:
@@ -589,11 +589,11 @@ class Spout:
     async def kyc_signature(self, address: str, use_proxy: bool, retries=5):
         url = f"{self.BASE_API}/kyc-signature"
         data = json.dumps({
-            "userAddress":address,
-            "onchainIDAddress":self.identity_address[address],
-            "claimData":"KYC passed",
-            "topic":1,
-            "countryCode":91
+            "userAddress": address,
+            "onchainIDAddress": self.identity_address[address],
+            "claimData": "KYC passed",
+            "topic": 1,
+            "countryCode": 91
         })
         headers = {
             "Accept": "*/*",
@@ -610,9 +610,9 @@ class Spout:
         await asyncio.sleep(3)
         for attempt in range(retries):
             proxy_url = self.get_next_proxy_for_account(address) if use_proxy else None
+            proxies = {"http": proxy_url, "https": proxy_url} if proxy_url else None
             try:
-                # Use standard requests instead of curl_requests
-                response = await asyncio.to_thread(requests.post, url=url, headers=headers, data=data, proxies=proxy_url, timeout=60)
+                response = await asyncio.to_thread(requests.post, url=url, headers=headers, data=data, proxies=proxies, timeout=60)
                 response.raise_for_status()
                 return response.json()
             except Exception as e:
